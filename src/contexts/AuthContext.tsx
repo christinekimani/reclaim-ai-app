@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signOut: () => void;
+  
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
