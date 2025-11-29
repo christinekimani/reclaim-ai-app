@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { BarChart2, LifeBuoy, LogOut, Settings, FolderKanban, FileUp } from 'lucide-react';
 import EvidenceTab from '../components/dashboard/EvidenceTab';
+import ResourcesTab from '../components/dashboard/ResourcesTab';
+import SettingsPage from './Settings'; // Import the new SettingsPage
 import { useAuth } from '../contexts/AuthContext';
 
 const tabs = [
@@ -56,21 +58,9 @@ export default function DashboardPage() {
           </div>
         );
       case 'Resources':
-        return (
-          <div className='text-center'>
-            <LifeBuoy size={64} className='mx-auto text-gray-400 mb-4' />
-            <h3 className='text-xl font-semibold'>Support Resources</h3>
-            <p className='text-gray-500'>Find help and support from trusted organizations.</p>
-          </div>
-        );
+        return <ResourcesTab />;
       case 'Settings':
-        return (
-          <div className='text-center'>
-            <Settings size={64} className='mx-auto text-gray-400 mb-4' />
-            <h3 className='text-xl font-semibold'>App Settings</h3>
-            <p className='text-gray-500'>Manage your security and preferences.</p>
-          </div>
-        );
+        return <SettingsPage />;
       default:
         return null;
     }

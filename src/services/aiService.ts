@@ -1,33 +1,39 @@
 import { supabase } from '../lib/supabaseClient';
 
-/**
- * Invokes the 'analyze-evidence' Supabase Edge Function to perform AI analysis on the given text.
- * @param evidenceText The text content of the evidence to be analyzed.
- * @returns The analysis result from the Edge Function.
- */
-export const analyzeEvidence = async (evidenceText: string) => {
-  if (!evidenceText || evidenceText.trim().length === 0) {
-    throw new Error('Evidence text to analyze cannot be empty.');
-  }
-
-  console.log('Invoking Supabase Edge Function: analyze-evidence...');
-
+export const analyzeEvidence = async (evidenceId: string) => {
   const { data, error } = await supabase.functions.invoke('analyze-evidence', {
-    body: { evidenceText },
+    body: { evidenceId },
   });
 
   if (error) {
-    console.error('Error invoking edge function:', error);
-    // This error typically means a network issue, function not deployed, or CORS problem.
-    throw new Error(`Failed to send a request to the Edge Function. Please ensure it is deployed correctly. Details: ${error.message}`);
+    throw new Error(`Failed to start analysis: ${error.message}`);
   }
 
-  // The function itself might return an error object inside the data payload
+  return data;
+};
+
+export const getChatResponse = async (message: string) => {
+  if (!message.trim()) {
+    throw new Error('Message cannot be empty.');
+  }
+
+  const { data, error } = await supabase.functions.invoke('chat-support', {
+    body: { message },
+  });
+
+  if (error) {
+    console.error('Supabase function invocation failed:', error);
+    throw new Error(`Failed to get chat response: ${error.message}`);
+  }
+
   if (data.error) {
-    console.error('An error occurred within the Edge Function:', data.error);
-    throw new Error(`The analysis process failed inside the Edge Function: ${data.error}`);
+    throw new Error(`Chatbot function returned an error: ${data.error}`);
   }
 
-  console.log('Successfully received analysis from Edge Function:', data.result);
-  return data.result;
+  if (!data.reply) {
+    console.error('Invalid response from AI service:', data);
+    throw new Error('Invalid response from AI service. Reply not found.');
+  }
+
+  return data.reply;
 };

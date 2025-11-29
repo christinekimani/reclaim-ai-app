@@ -1,48 +1,33 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 import LandingPage from './pages/landing';
 import LoginPage from './pages/login';
 import RegisterPage from './pages/register';
+import Dashboard from './pages/dashboard';
+import Settings from './pages/Settings';
 import OnboardingPage from './pages/onboarding';
-import DashboardPage from './pages/dashboard';
-import CalculatorPage from './pages/calculator';
+import Header from './components/Header';
 import { Toaster } from 'sonner';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { ReactNode } from 'react';
 
-function ProtectedRoute({ children }: { children: ReactNode }) {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return <div>Loading...</div>; // Or a spinner component
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
-}
-
-function AppRoutes() {
-  return (
-    <Routes>
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      <Route path="/onboarding" element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
-      <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
-      <Route path="/calculator" element={<CalculatorPage />} />
-    </Routes>
-  );
-}
-
-export default function App() {
+function App() {
   return (
     <Router>
-      <Toaster />
       <AuthProvider>
-        <AppRoutes />
+        <Header />
+        <main>
+          <Routes>
+            <Route path='/' element={<LandingPage />} />
+            <Route path='/login' element={<LoginPage />} />
+            <Route path='/register' element={<RegisterPage />} />
+            <Route path='/dashboard' element={<Dashboard />} />
+            <Route path='/settings' element={<Settings />} />
+            <Route path='/onboarding' element={<OnboardingPage />} />
+          </Routes>
+        </main>
+        <Toaster richColors />
       </AuthProvider>
     </Router>
   );
 }
+
+export default App;
